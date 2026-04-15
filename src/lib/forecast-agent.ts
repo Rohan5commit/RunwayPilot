@@ -56,6 +56,9 @@ function deriveForecastInputs(transactions: Transaction[], monthly: MonthlySnaps
     if (transaction.direction !== "outflow" || !trailingMonths.includes(transaction.month)) {
       continue;
     }
+    if (transaction.category === "revenue") {
+      continue;
+    }
 
     expenseTotals[transaction.category] += transaction.absAmount;
   }

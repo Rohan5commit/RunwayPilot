@@ -1,7 +1,11 @@
-import type { AnalysisResult, ForecastScenario, MonthlySnapshot, RiskFinding } from "@/lib/types";
+import type { AnalysisResult, ForecastScenario, MonthlySnapshot, RiskFinding, ScenarioControls } from "@/lib/types";
 import { labelizeCategory } from "@/lib/formatters";
 import { classificationAgent } from "@/lib/classification-agent";
-import { forecastAgent, buildCustomScenario, DEFAULT_SCENARIO_CONTROLS } from "@/lib/forecast-agent";
+import {
+  forecastAgent,
+  buildCustomScenario as buildScenarioFromInputs,
+  DEFAULT_SCENARIO_CONTROLS
+} from "@/lib/forecast-agent";
 import { intakeAgent } from "@/lib/intake-agent";
 import { riskAgent } from "@/lib/risk-agent";
 
@@ -13,7 +17,7 @@ export const QUICK_QUESTIONS = [
 ];
 
 export const DEFAULT_QUESTION = QUICK_QUESTIONS[0];
-export { DEFAULT_SCENARIO_CONTROLS, buildCustomScenario };
+export { DEFAULT_SCENARIO_CONTROLS };
 
 const average = (values: number[]) => {
   if (values.length === 0) {
@@ -182,6 +186,10 @@ export function buildAnalysisFromCsv(csvText: string, datasetLabel = "Uploaded C
     summary: buildSummary(monthly, topCategories, risks),
     forecast
   };
+}
+
+export function buildCustomScenario(analysis: AnalysisResult, controls: ScenarioControls): ForecastScenario {
+  return buildScenarioFromInputs(analysis.transactions, analysis.monthly, controls);
 }
 
 export function buildStrategySnapshot(analysis: AnalysisResult, scenario: ForecastScenario) {
