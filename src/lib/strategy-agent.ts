@@ -9,7 +9,11 @@ const SYSTEM_PROMPT = [
   "Never invent financial data or unsupported causes.",
   "Distinguish fact, inference, and recommendation.",
   "Keep advice concise, practical, and actionable.",
-  "Return only valid JSON with keys summary, top_risks, recommended_actions, confidence, board_ready_note."
+  "Return only valid JSON with this exact schema:",
+  '{"summary":"string","top_risks":["string"],"recommended_actions":["string"],"confidence":"high | medium | low","board_ready_note":"string"}',
+  "top_risks and recommended_actions must be arrays of plain strings, not arrays of objects.",
+  "confidence must be one of high, medium, or low.",
+  "Do not return markdown fences or any surrounding commentary."
 ].join(" ");
 
 function fallbackStrategy(
@@ -41,7 +45,142 @@ function fallbackStrategy(
 
 function extractJsonObject(content: string) {
   const cleaned = content.trim().replace(/^```json\s*/i, "").replace(/```$/i, "").trim();
-  return JSON.parse(cleaned) as StrategyResponse;
+  return JSON.parse(cleaned) as unknown;
+}
+
+function normalizeText(value: unknown) {
+  return typeof value === "string" ? value.trim().replace(/\s+/g, " ") : "";
+}
+
+function normalizeSummary(value: unknown, fallback: string) {
+  const direct = normalizeText(value);
+  if (direct) {
+    return direct;
+  }
+
+  if (!value || typeof value !== "object") {
+    return fallback;
+  }
+
+  const summary = value as Record<string, unknown>;
+  const highestRiskAlert = normalizeText(summary.highestRiskAlert);
+  const cashBalance = typeof summary.cashBalance === "number" ? formatCurrency(summary.cashBalance) : "";
+  const runway = typeof summary.runwayMonthsRemaining === "number" ? formatRunway(summary.runwayMonthsRemaining) : "";
+  const parts = [highestRiskAlert];
+
+  if (cashBalance && runway) {
+    parts.push(`Current cash balance is ${cashBalance} with ${runway} of runway.`);
+  }
+
+  return parts.filter(Boolean).join(" ") || fallback;
+}
+
+function normalizeConfidence(
+  value: unknown,
+  fallback: StrategyResponse["confidence"]
+): StrategyResponse["confidence"] {
+  const direct = normalizeText(value).toLowerCase();
+  if (direct === "high" || direct === "medium" || direct === "low") {
+    return direct;
+  }
+
+  const numeric =
+    typeof value === "number"
+      ? value
+      : typeof value === "string"
+        ? Number.parseFloat(value)
+        : Number.NaN;
+
+  if (!Number.isNaN(numeric)) {
+    if (numeric >= 70) {
+      return "high";
+    }
+    if (numeric >= 40) {
+      return "medium";
+    }
+    return "low";
+  }
+
+  return fallback;
+}
+
+function mergeWithFallback(primary: string[], fallback: string[]) {
+  const merged = [...primary.filter(Boolean)];
+
+  for (const item of fallback) {
+    if (merged.length >= 3) {
+      break;
+    }
+    if (!merged.includes(item)) {
+      merged.push(item);
+    }
+  }
+
+  return merged.slice(0, 3);
+}
+
+function normalizeRiskList(value: unknown, fallback: string[]) {
+  if (!Array.isArray(value)) {
+    return fallback;
+  }
+
+  const normalized = value
+    .map((item) => {
+      const direct = normalizeText(item);
+      if (direct) {
+        return direct;
+      }
+      if (!item || typeof item !== "object") {
+        return "";
+      }
+      const record = item as Record<string, unknown>;
+      const title = normalizeText(record.title);
+      const metric = normalizeText(record.metric);
+      return [title, metric].filter(Boolean).join(": ");
+    })
+    .filter(Boolean);
+
+  return mergeWithFallback(normalized, fallback);
+}
+
+function normalizeActionList(value: unknown, fallback: string[]) {
+  if (!Array.isArray(value)) {
+    return fallback;
+  }
+
+  const normalized = value
+    .map((item) => {
+      const direct = normalizeText(item);
+      if (direct) {
+        return direct;
+      }
+      if (!item || typeof item !== "object") {
+        return "";
+      }
+      const record = item as Record<string, unknown>;
+      const action = normalizeText(record.action);
+      const note = normalizeText(record.note);
+      return [action, note].filter(Boolean).join(": ");
+    })
+    .filter(Boolean);
+
+  return mergeWithFallback(normalized, fallback);
+}
+
+function normalizeStrategyResponse(value: unknown, fallback: StrategyResponse): StrategyResponse {
+  if (!value || typeof value !== "object") {
+    return fallback;
+  }
+
+  const record = value as Record<string, unknown>;
+
+  return {
+    summary: normalizeSummary(record.summary, fallback.summary),
+    top_risks: normalizeRiskList(record.top_risks, fallback.top_risks),
+    recommended_actions: normalizeActionList(record.recommended_actions, fallback.recommended_actions),
+    confidence: normalizeConfidence(record.confidence, fallback.confidence),
+    board_ready_note: normalizeText(record.board_ready_note) || fallback.board_ready_note
+  };
 }
 
 async function callNim(prompt: string) {
@@ -96,11 +235,12 @@ export async function generateStrategyResponse({
   question?: string;
 }) {
   const apiKey = process.env.NVIDIA_NIM_API_KEY;
+  const fallback = fallbackStrategy(analysis, scenario, question);
 
   if (!apiKey) {
     return {
       mode: "fallback" as const,
-      strategy: fallbackStrategy(analysis, scenario, question)
+      strategy: fallback
     };
   }
 
@@ -111,27 +251,31 @@ export async function generateStrategyResponse({
     "Explain assumptions and keep the confidence honest.",
     "Facts:",
     JSON.stringify(snapshot, null, 2)
-  ].join("\n\n");
+  ].join("
+
+");
 
   try {
     const firstAttempt = await callNim(prompt);
     return {
       mode: "nim" as const,
-      strategy: extractJsonObject(firstAttempt)
+      strategy: normalizeStrategyResponse(extractJsonObject(firstAttempt), fallback)
     };
   } catch (firstError) {
     try {
-      const retryPrompt = `${prompt}\n\nReturn only a valid JSON object. No markdown fences.`;
+      const retryPrompt = `${prompt}
+
+Return only a valid JSON object with the exact schema requested. No markdown fences. No nested objects inside top_risks or recommended_actions.`;
       const secondAttempt = await callNim(retryPrompt);
       return {
         mode: "nim" as const,
-        strategy: extractJsonObject(secondAttempt)
+        strategy: normalizeStrategyResponse(extractJsonObject(secondAttempt), fallback)
       };
     } catch (secondError) {
       console.error("RunwayPilot NIM fallback engaged", firstError, secondError);
       return {
         mode: "fallback" as const,
-        strategy: fallbackStrategy(analysis, scenario, question)
+        strategy: fallback
       };
     }
   }
