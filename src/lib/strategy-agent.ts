@@ -251,9 +251,7 @@ export async function generateStrategyResponse({
     "Explain assumptions and keep the confidence honest.",
     "Facts:",
     JSON.stringify(snapshot, null, 2)
-  ].join("
-
-");
+  ].join("\n\n");
 
   try {
     const firstAttempt = await callNim(prompt);
@@ -263,9 +261,7 @@ export async function generateStrategyResponse({
     };
   } catch (firstError) {
     try {
-      const retryPrompt = `${prompt}
-
-Return only a valid JSON object with the exact schema requested. No markdown fences. No nested objects inside top_risks or recommended_actions.`;
+      const retryPrompt = `${prompt}\n\nReturn only a valid JSON object with the exact schema requested. No markdown fences. No nested objects inside top_risks or recommended_actions.`;
       const secondAttempt = await callNim(retryPrompt);
       return {
         mode: "nim" as const,
