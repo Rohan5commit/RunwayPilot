@@ -10,25 +10,56 @@ const categoryMatchers: Record<Exclude<TransactionCategory, "revenue" | "other">
 
 const normalizeText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
+const revenueMatchers = [/revenue/, /sales/, /mrr/, /arr/, /invoice/, /subscription payment/, /customer payment/];
+const nonOperatingInflowMatchers = [/refund/, /rebate/, /credit/, /grant/, /loan/, /investment/, /financing/, /capital/];
+
+function matchExpenseCategory(input: string) {
+  for (const [category, matchers] of Object.entries(categoryMatchers) as Array<[
+    Exclude<TransactionCategory, "revenue" | "other">,
+    RegExp[]
+  ]>) {
+    if (matchers.some((matcher) => matcher.test(input))) {
+      return category;
+    }
+  }
+
+  return null;
+}
+
+function classifyInflow(transaction: Transaction): TransactionCategory {
+  const hint = normalizeText(transaction.categoryHint ?? "");
+  const combinedText = `${transaction.normalizedText} ${hint}`.trim();
+
+  if (revenueMatchers.some((matcher) => matcher.test(combinedText))) {
+    return "revenue";
+  }
+
+  if (nonOperatingInflowMatchers.some((matcher) => matcher.test(combinedText))) {
+    return "other";
+  }
+
+  if (hint && matchExpenseCategory(hint)) {
+    return "other";
+  }
+
+  return "revenue";
+}
+
 function classifyCategory(transaction: Transaction): TransactionCategory {
   if (transaction.isOpeningBalance) {
     return "other";
   }
 
   if (transaction.direction === "inflow") {
-    return "revenue";
+    return classifyInflow(transaction);
   }
 
   const hint = normalizeText(transaction.categoryHint ?? "");
   const combinedText = `${transaction.normalizedText} ${hint}`.trim();
 
-  for (const [category, matchers] of Object.entries(categoryMatchers) as Array<[
-    Exclude<TransactionCategory, "revenue" | "other">,
-    RegExp[]
-  ]>) {
-    if (matchers.some((matcher) => matcher.test(combinedText))) {
-      return category;
-    }
+  const matchedCategory = matchExpenseCategory(combinedText);
+  if (matchedCategory) {
+    return matchedCategory;
   }
 
   return "other";

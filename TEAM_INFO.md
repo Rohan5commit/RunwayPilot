@@ -8,11 +8,9 @@ RunwayPilot
 
 | Member | Role | Contribution Summary |
 | --- | --- | --- |
-| Name | Product / Engineering | |
-| Name | Design / UX | |
-| Name | AI / Data / Demo | |
+| Rohan Santhosh Kumar | Solo builder: product, engineering, design, AI, and demo | Defined the problem and product strategy, built the Next.js app and analytics pipeline, integrated NVIDIA NIM, authored the submission docs, created the seeded demo flow, and deployed the live prototype on Vercel. |
 
 ## Notes
 
-- Replace the placeholder rows with the final team roster.
-- Keep contribution summaries concrete for the final Orion submission.
+- This submission is currently structured as a solo-team entry.
+- If the final Orion submission uses a different team roster, update this table before filing.

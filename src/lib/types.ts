@@ -117,6 +117,13 @@ export interface AnalysisResult {
   };
 }
 
+export interface StrategyAnalysisInput {
+  summary: AnalysisSummary;
+  topCategories: CategorySpend[];
+  topVendors: VendorSpend[];
+  risks: RiskFinding[];
+}
+
 export interface StrategyResponse {
   summary: string;
   top_risks: string[];

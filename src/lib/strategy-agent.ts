@@ -1,6 +1,8 @@
 import { buildStrategySnapshot } from "@/lib/analysis";
 import { formatCurrency, formatRunway } from "@/lib/formatters";
-import type { AnalysisResult, ForecastScenario, StrategyResponse } from "@/lib/types";
+import type { ForecastScenario, StrategyAnalysisInput, StrategyResponse } from "@/lib/types";
+
+const NIM_TIMEOUT_MS = 12000;
 
 const SYSTEM_PROMPT = [
   "You are RunwayPilot's Strategy Agent.",
@@ -17,7 +19,7 @@ const SYSTEM_PROMPT = [
 ].join(" ");
 
 function fallbackStrategy(
-  analysis: AnalysisResult,
+  analysis: StrategyAnalysisInput,
   scenario: ForecastScenario,
   question?: string
 ): StrategyResponse {
@@ -185,44 +187,56 @@ function normalizeStrategyResponse(value: unknown, fallback: StrategyResponse): 
 
 async function callNim(prompt: string) {
   const apiKey = process.env.NVIDIA_NIM_API_KEY;
-  const model = process.env.NVIDIA_NIM_MODEL || "nvidia/llama-3.3-nemotron-super-49b-v1.5";
+  const model = process.env.NVIDIA_NIM_MODEL || "nvidia/llama-3.1-nemotron-nano-8b-v1";
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), NIM_TIMEOUT_MS);
 
-  const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.2,
-      top_p: 0.8,
-      max_tokens: 650,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: prompt }
-      ]
-    })
-  });
+  try {
+    const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0.2,
+        top_p: 0.8,
+        max_tokens: 650,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: prompt }
+        ]
+      }),
+      signal: controller.signal
+    });
 
-  if (!response.ok) {
-    throw new Error(`NVIDIA NIM request failed with status ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`NVIDIA NIM request failed with status ${response.status}`);
+    }
+
+    const payload = (await response.json()) as {
+      choices?: Array<{
+        message?: {
+          content?: string;
+        };
+      }>;
+    };
+
+    const content = payload.choices?.[0]?.message?.content;
+    if (!content) {
+      throw new Error("NVIDIA NIM returned an empty response.");
+    }
+
+    return content;
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(`NVIDIA NIM timed out after ${NIM_TIMEOUT_MS}ms`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
   }
-
-  const payload = (await response.json()) as {
-    choices?: Array<{
-      message?: {
-        content?: string;
-      };
-    }>;
-  };
-
-  const content = payload.choices?.[0]?.message?.content;
-  if (!content) {
-    throw new Error("NVIDIA NIM returned an empty response.");
-  }
-
-  return content;
 }
 
 export async function generateStrategyResponse({
@@ -230,7 +244,7 @@ export async function generateStrategyResponse({
   scenario,
   question
 }: {
-  analysis: AnalysisResult;
+  analysis: StrategyAnalysisInput;
   scenario: ForecastScenario;
   question?: string;
 }) {

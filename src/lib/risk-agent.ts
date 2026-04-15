@@ -40,10 +40,14 @@ export function riskAgent(
 ) {
   const risks: RiskFinding[] = [];
   const trailingMonths = monthly.slice(-Math.min(3, monthly.length)).map((item) => item.month);
+  const trailingMonthCount = Math.max(trailingMonths.length, 1);
   const trailingOutflows = transactions.filter(
     (transaction) =>
       transaction.direction === "outflow" && !transaction.isOpeningBalance && trailingMonths.includes(transaction.month)
   );
+  const nonPayrollOutflow = trailingOutflows
+    .filter((transaction) => transaction.category !== "payroll")
+    .reduce((sum, transaction) => sum + transaction.absAmount, 0);
 
   const categoryValues = new Map<string, number[]>();
   for (const transaction of trailingOutflows) {
@@ -128,13 +132,15 @@ export function riskAgent(
   }
 
   const concentrationLeader = topVendors.filter((vendor) => vendor.category !== "payroll")[0];
-  if (concentrationLeader && concentrationLeader.share > 0.28) {
+  const nonPayrollShare =
+    concentrationLeader && nonPayrollOutflow > 0 ? concentrationLeader.amount / nonPayrollOutflow : 0;
+  if (concentrationLeader && nonPayrollShare > 0.28) {
     addUniqueRisk(risks, {
       id: "vendor-concentration",
       title: "Vendor concentration risk is elevated",
-      description: `${concentrationLeader.vendor} represents ${(concentrationLeader.share * 100).toFixed(1)}% of recent non-payroll outflow.`,
-      severity: concentrationLeader.share > 0.38 ? "high" : "medium",
-      metric: `${(concentrationLeader.share * 100).toFixed(1)}% of recent spend`,
+      description: `${concentrationLeader.vendor} represents ${(nonPayrollShare * 100).toFixed(1)}% of recent non-payroll outflow.`,
+      severity: nonPayrollShare > 0.38 ? "high" : "medium",
+      metric: `${(nonPayrollShare * 100).toFixed(1)}% of recent non-payroll spend`,
       recommendation: "Review negotiating leverage, lock-in exposure, and fallback options with this vendor.",
       agent: AGENT_NAME
     });
@@ -142,13 +148,15 @@ export function riskAgent(
 
   const softwareCategory = topCategories.find((category) => category.category === "software");
   const recentRevenue = average(monthly.slice(-Math.min(3, monthly.length)).map((item) => item.revenue));
-  if (softwareCategory && recentRevenue > 0 && softwareCategory.amount / recentRevenue > 0.12) {
+  const monthlySoftwareLoad = softwareCategory ? softwareCategory.amount / trailingMonthCount : 0;
+  const softwareRevenueRatio = recentRevenue > 0 ? monthlySoftwareLoad / recentRevenue : 0;
+  if (softwareCategory && recentRevenue > 0 && softwareRevenueRatio > 0.12) {
     addUniqueRisk(risks, {
       id: "software-sprawl",
       title: "Recurring software load is getting heavy",
       description: "Software subscriptions are taking a meaningful share of current revenue relative to this stage.",
-      severity: softwareCategory.amount / recentRevenue > 0.18 ? "high" : "medium",
-      metric: `${((softwareCategory.amount / recentRevenue) * 100).toFixed(1)}% of trailing revenue`,
+      severity: softwareRevenueRatio > 0.18 ? "high" : "medium",
+      metric: `${(softwareRevenueRatio * 100).toFixed(1)}% of average trailing monthly revenue`,
       recommendation: "Consolidate tools, remove duplicated seats, and renegotiate annual plans before renewal.",
       agent: AGENT_NAME
     });

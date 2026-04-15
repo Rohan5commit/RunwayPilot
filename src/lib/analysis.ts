@@ -1,4 +1,4 @@
-import type { AnalysisResult, ForecastScenario, MonthlySnapshot, RiskFinding, ScenarioControls } from "@/lib/types";
+import type { AnalysisResult, ForecastScenario, MonthlySnapshot, RiskFinding, ScenarioControls, StrategyAnalysisInput } from "@/lib/types";
 import { labelizeCategory } from "@/lib/formatters";
 import { classificationAgent } from "@/lib/classification-agent";
 import {
@@ -192,7 +192,16 @@ export function buildCustomScenario(analysis: AnalysisResult, controls: Scenario
   return buildScenarioFromInputs(analysis.transactions, analysis.monthly, controls);
 }
 
-export function buildStrategySnapshot(analysis: AnalysisResult, scenario: ForecastScenario) {
+export function toStrategyAnalysisInput(analysis: AnalysisResult): StrategyAnalysisInput {
+  return {
+    summary: analysis.summary,
+    topCategories: analysis.topCategories,
+    topVendors: analysis.topVendors,
+    risks: analysis.risks
+  };
+}
+
+export function buildStrategySnapshot(analysis: StrategyAnalysisInput, scenario: ForecastScenario) {
   return {
     summary: analysis.summary,
     top_categories: analysis.topCategories.slice(0, 4).map((category) => ({

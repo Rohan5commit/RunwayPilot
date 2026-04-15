@@ -40,7 +40,8 @@ Open `http://localhost:3000` and either load the bundled demo dataset or upload 
 1. Push the repository to a public GitHub repo.
 2. Import the repo into Vercel.
 3. Add `NVIDIA_NIM_API_KEY` in the Vercel project settings.
-4. Redeploy.
+4. Optionally set `NVIDIA_NIM_MODEL` if you want to override the fast default model.
+5. Redeploy.
 
 The repo already includes `vercel.json`, a Next.js App Router setup, and a GitHub Actions workflow for build verification.
 
@@ -55,7 +56,7 @@ NVIDIA_NIM_API_KEY=
 Optional:
 
 ```bash
-NVIDIA_NIM_MODEL=nvidia/llama-3.3-nemotron-super-49b-v1.5
+NVIDIA_NIM_MODEL=nvidia/llama-3.1-nemotron-nano-8b-v1
 ```
 
 RunwayPilot uses NVIDIA NIM for:
@@ -67,6 +68,17 @@ RunwayPilot uses NVIDIA NIM for:
 - founder-facing board notes
 
 If the key is missing, the Strategy Agent falls back to deterministic, rules-based guidance so judges can still test the full product flow.
+
+## Judge runbook
+
+Use this deterministic 60-second demo path:
+
+1. Open the live app and click `Load sample startup data`.
+2. Read the KPI strip: cash balance, burn, runway, revenue trend, expense trend.
+3. Point to the anomaly and duplicated charge in the risk panel.
+4. Show the downside simulator by dropping revenue and adding a one-time cost.
+5. Open the AI CFO panel and show the NVIDIA NIM explanation plus top 3 actions.
+6. Export the founder report to show board-ready output.
 
 ## Architecture overview
 

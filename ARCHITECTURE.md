@@ -6,13 +6,16 @@ RunwayPilot uses Next.js with TypeScript and the App Router. The UI is organized
 
 ## Data pipeline
 
-The client-side pipeline follows five labeled agents:
+RunwayPilot uses a split pipeline so the financial logic stays deterministic on the client while the narrative AI layer stays server-side.
+
+The frontend analytics pipeline follows four labeled agents:
 
 1. **Intake Agent** validates CSV rows, standardizes dates and amounts, and recognizes opening balance rows.
 2. **Classification Agent** assigns operating categories such as payroll, software, infrastructure, marketing, operations, revenue, and other.
 3. **Forecast Agent** aggregates monthly metrics, calculates burn and runway, and builds baseline, optimistic, and conservative forecasts.
 4. **Risk Agent** scores anomalies, concentration, duplicated spend, deteriorating cashflow, and revenue weakness.
-5. **Strategy Agent** packages the important facts and sends them to NVIDIA NIM for structured business-language recommendations.
+
+The **Strategy Agent** runs in the server-side `/api/strategy` route. It receives a validated subset of the structured finance snapshot and calls NVIDIA NIM for business-language recommendations.
 
 ## Forecasting logic
 
@@ -20,7 +23,7 @@ Forecasting is deterministic rather than black-box. The system uses recent month
 
 ## Agent flow
 
-Raw data enters through the Intake Agent and moves through classification and forecasting before risk analysis runs. Only after the structured analytics layer is complete does the Strategy Agent generate narrative output. This separation is important because it keeps the AI layer grounded in verified financial facts.
+Raw data enters through the Intake Agent and moves through classification and forecasting before risk analysis runs in the browser. Only after the structured analytics layer is complete does the client send a compact, validated strategy payload to the server-side Strategy Agent. This separation keeps the AI layer grounded in verified financial facts while limiting payload size and tampering risk.
 
 ## Export and report generation
 

@@ -19,7 +19,8 @@ import {
   buildCustomScenario,
   DEFAULT_QUESTION,
   DEFAULT_SCENARIO_CONTROLS,
-  QUICK_QUESTIONS
+  QUICK_QUESTIONS,
+  toStrategyAnalysisInput
 } from "@/lib/analysis";
 import {
   formatCompactCurrency,
@@ -27,6 +28,7 @@ import {
   formatPercent,
   formatRunway,
   formatSignedCurrency,
+  labelizeCategory,
   severityTone
 } from "@/lib/formatters";
 import { buildFounderReport } from "@/lib/report";
@@ -209,7 +211,7 @@ export default function DashboardApp() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          analysis,
+          analysis: toStrategyAnalysisInput(analysis),
           scenario: customScenario,
           question: nextQuestion
         })
@@ -491,6 +493,11 @@ export default function DashboardApp() {
                 <div className="mt-6 space-y-5">
                   {insightLoading ? <div className="text-sm text-[var(--text-muted)]">Generating the CFO explanation...</div> : null}
                   {insightError ? <div className="rounded-2xl bg-[rgba(181,78,59,0.12)] px-4 py-3 text-sm text-[var(--danger)]">{insightError}</div> : null}
+                  {strategyMode === "fallback" ? (
+                    <div className="rounded-2xl bg-[rgba(210,135,44,0.12)] px-4 py-3 text-sm text-[var(--warning)]">
+                      NVIDIA NIM is unavailable or timed out, so the dashboard is showing a deterministic backup explanation.
+                    </div>
+                  ) : null}
                   {strategy ? (
                     <>
                       <div className="rounded-[1.4rem] bg-[var(--surface-muted)] p-4">
@@ -588,7 +595,7 @@ export default function DashboardApp() {
                     {analysis.topCategories.map((category) => (
                       <div key={category.category} className="space-y-2">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="font-medium text-[var(--text)]">{category.category}</span>
+                          <span className="font-medium text-[var(--text)]">{labelizeCategory(category.category)}</span>
                           <span className="text-[var(--text-muted)]">{formatCurrency(category.amount)}</span>
                         </div>
                         <div className="h-3 rounded-full bg-[var(--surface-muted)]">
