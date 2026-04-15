@@ -1,0 +1,63 @@
+date,description,vendor,amount,direction,category_hint,notes
+2026-01-01,Opening Cash Balance,First Spark Ventures,250000,inflow,other,Seed round cash on hand
+2026-01-04,January recurring revenue,Moonbase Labs,42000,inflow,revenue,Monthly recurring revenue
+2026-01-06,Gusto payroll,Gusto,38000,outflow,payroll,Team salaries and taxes
+2026-01-07,AWS production infrastructure,AWS,4500,outflow,infra,Primary cloud bill
+2026-01-08,HubSpot growth plan,HubSpot,1800,outflow,software,CRM subscription
+2026-01-10,Notion workspace,Notion,1200,outflow,software,Knowledge base
+2026-01-12,Linear seats,Linear,480,outflow,software,Issue tracking
+2026-01-14,Figma org plan,Figma,420,outflow,software,Design tooling
+2026-01-15,Meta demand capture,Meta Ads,3200,outflow,marketing,Paid growth
+2026-01-18,Product design contractor,Northstar Studio,6500,outflow,operations,Contractor support
+2026-01-26,Customer onboarding travel,Delta Hotels,900,outflow,operations,Founder travel
+2026-02-04,February recurring revenue,Moonbase Labs,43000,inflow,revenue,Monthly recurring revenue
+2026-02-06,Gusto payroll,Gusto,39000,outflow,payroll,Team salaries and taxes
+2026-02-07,AWS production infrastructure,AWS,4800,outflow,infra,Primary cloud bill
+2026-02-08,HubSpot growth plan,HubSpot,1800,outflow,software,CRM subscription
+2026-02-10,Notion workspace,Notion,1200,outflow,software,Knowledge base
+2026-02-12,Linear seats,Linear,480,outflow,software,Issue tracking
+2026-02-14,Figma org plan,Figma,420,outflow,software,Design tooling
+2026-02-15,Meta demand capture,Meta Ads,3600,outflow,marketing,Paid growth
+2026-02-18,Product design contractor,Northstar Studio,6200,outflow,operations,Contractor support
+2026-03-04,March recurring revenue,Moonbase Labs,43500,inflow,revenue,Monthly recurring revenue
+2026-03-06,Gusto payroll,Gusto,39500,outflow,payroll,Team salaries and taxes
+2026-03-07,AWS production infrastructure,AWS,5200,outflow,infra,Primary cloud bill
+2026-03-08,HubSpot growth plan,HubSpot,1800,outflow,software,CRM subscription
+2026-03-10,Notion workspace,Notion,1200,outflow,software,Knowledge base
+2026-03-12,Linear seats,Linear,480,outflow,software,Issue tracking
+2026-03-14,Figma org plan,Figma,420,outflow,software,Design tooling
+2026-03-15,Meta demand capture,Meta Ads,4200,outflow,marketing,Paid growth
+2026-03-18,Product design contractor,Northstar Studio,7000,outflow,operations,Contractor support
+2026-03-25,Customer conference trip,United Travel,1200,outflow,operations,Conference travel
+2026-04-04,April recurring revenue,Moonbase Labs,42800,inflow,revenue,Monthly recurring revenue
+2026-04-06,Gusto payroll,Gusto,40200,outflow,payroll,Team salaries and taxes
+2026-04-07,AWS production infrastructure,AWS,5400,outflow,infra,Primary cloud bill
+2026-04-08,HubSpot growth plan,HubSpot,1800,outflow,software,CRM subscription
+2026-04-10,Notion workspace,Notion,1200,outflow,software,Knowledge base
+2026-04-12,Linear seats,Linear,480,outflow,software,Issue tracking
+2026-04-14,Figma org plan,Figma,420,outflow,software,Design tooling
+2026-04-15,Meta demand capture,Meta Ads,4800,outflow,marketing,Paid growth
+2026-04-18,Product design contractor,Northstar Studio,9000,outflow,operations,Contractor support
+2026-04-24,Founder customer travel,Delta Hotels,800,outflow,operations,Customer meetings
+2026-05-04,May recurring revenue,Moonbase Labs,41200,inflow,revenue,Monthly recurring revenue slowed
+2026-05-06,Gusto payroll,Gusto,40800,outflow,payroll,Team salaries and taxes
+2026-05-07,AWS production infrastructure,AWS,5800,outflow,infra,Primary cloud bill
+2026-05-08,HubSpot growth plan,HubSpot,1800,outflow,software,CRM subscription
+2026-05-10,Notion workspace,Notion,1200,outflow,software,Knowledge base
+2026-05-12,Linear seats,Linear,480,outflow,software,Issue tracking
+2026-05-14,Figma org plan,Figma,420,outflow,software,Design tooling
+2026-05-15,Meta demand capture,Meta Ads,5200,outflow,marketing,Paid growth
+2026-05-18,Product design contractor,Northstar Studio,8600,outflow,operations,Contractor support
+2026-05-26,Launch travel and lodging,Marriott Air,3400,outflow,operations,Travel spike
+2026-06-04,June recurring revenue,Moonbase Labs,39800,inflow,revenue,Collections slowed again
+2026-06-06,Gusto payroll,Gusto,41400,outflow,payroll,Team salaries and taxes
+2026-06-07,AWS production infrastructure,AWS,6100,outflow,infra,Primary cloud bill
+2026-06-08,HubSpot growth plan,HubSpot,1800,outflow,software,CRM subscription
+2026-06-10,Notion workspace,Notion,1200,outflow,software,Knowledge base
+2026-06-12,Linear seats,Linear,480,outflow,software,Issue tracking
+2026-06-14,Figma org plan,Figma,420,outflow,software,Design tooling
+2026-06-14,Figma org plan,Figma,420,outflow,software,Duplicated workspace charge
+2026-06-15,Meta demand capture,Meta Ads,5600,outflow,marketing,Paid growth
+2026-06-18,Product design contractor,Northstar Studio,9200,outflow,operations,Contractor support
+2026-06-20,Emergency GPU burst,AWS Marketplace,16800,outflow,infra,Unexpected one-time acceleration charge
+2026-06-26,Founder customer travel,Delta Hotels,900,outflow,operations,Customer meetings

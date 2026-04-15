@@ -1,0 +1,33 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="900" fill="#F5F2EB"/>
+  <rect x="32" y="28" width="1376" height="844" rx="28" fill="#FCFBF8" stroke="#D9D1C3"/>
+  <rect x="64" y="56" width="240" height="20" rx="10" fill="#D7C9AA"/>
+  <rect x="64" y="88" width="360" height="16" rx="8" fill="#C6B89A" opacity="0.65"/>
+  <rect x="64" y="140" width="214" height="118" rx="20" fill="#FFFFFF" stroke="#E5DDD2"/>
+  <rect x="292" y="140" width="214" height="118" rx="20" fill="#FFFFFF" stroke="#E5DDD2"/>
+  <rect x="520" y="140" width="214" height="118" rx="20" fill="#FFFFFF" stroke="#E5DDD2"/>
+  <rect x="748" y="140" width="214" height="118" rx="20" fill="#FFFFFF" stroke="#E5DDD2"/>
+  <rect x="976" y="140" width="214" height="118" rx="20" fill="#FFFFFF" stroke="#E5DDD2"/>
+  <rect x="1204" y="140" width="172" height="118" rx="20" fill="#102A2B"/>
+  <rect x="64" y="290" width="900" height="286" rx="24" fill="#FFFFFF" stroke="#E5DDD2"/>
+  <rect x="988" y="290" width="388" height="286" rx="24" fill="#F1EFE9" stroke="#D7D1C7"/>
+  <rect x="64" y="604" width="660" height="228" rx="24" fill="#FFFFFF" stroke="#E5DDD2"/>
+  <rect x="748" y="604" width="628" height="228" rx="24" fill="#FFFFFF" stroke="#E5DDD2"/>
+  <path d="M108 506C164 470 222 454 278 468C334 482 392 436 448 430C504 424 562 460 618 438C674 416 732 392 788 340C824 306 858 330 906 356" stroke="#0D7B74" stroke-width="8" stroke-linecap="round"/>
+  <path d="M108 518H906" stroke="#DAD3C6" stroke-width="2" stroke-dasharray="10 10"/>
+  <rect x="1024" y="336" width="318" height="24" rx="12" fill="#102A2B"/>
+  <rect x="1024" y="378" width="280" height="16" rx="8" fill="#516265"/>
+  <rect x="1024" y="416" width="296" height="16" rx="8" fill="#748386"/>
+  <rect x="1024" y="472" width="142" height="40" rx="20" fill="#0D7B74"/>
+  <rect x="94" y="640" width="186" height="150" rx="18" fill="#F5F2EB"/>
+  <rect x="300" y="640" width="186" height="150" rx="18" fill="#F5F2EB"/>
+  <rect x="506" y="640" width="186" height="150" rx="18" fill="#F5F2EB"/>
+  <rect x="780" y="640" width="132" height="18" rx="9" fill="#D7C9AA"/>
+  <rect x="780" y="676" width="560" height="16" rx="8" fill="#E7E1D6"/>
+  <rect x="780" y="714" width="530" height="16" rx="8" fill="#E7E1D6"/>
+  <rect x="780" y="752" width="488" height="16" rx="8" fill="#E7E1D6"/>
+  <text x="70" y="78" fill="#142324" font-size="26" font-family="Arial, sans-serif" font-weight="700">RunwayPilot Dashboard Preview</text>
+  <text x="70" y="108" fill="#5C686B" font-size="16" font-family="Arial, sans-serif">Premium fintech-style layout with KPI cards, forecast chart, AI insights, and scenario controls</text>
+  <text x="1226" y="204" fill="#FCFBF8" font-size="18" font-family="Arial, sans-serif" font-weight="700">High-risk alert</text>
+  <text x="1226" y="232" fill="#D9E4E4" font-size="14" font-family="Arial, sans-serif">Infra anomaly and revenue slowdown</text>
+</svg>
